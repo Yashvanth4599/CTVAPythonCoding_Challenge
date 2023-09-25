@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Title of the document -->
+    <title>Weather Statistics</title>
+    <!-- Linking to Bootstrap CSS for styling -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        /* Styles for the model pop-up */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+        }
+
+        /* Close button style */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+         /* Styles for the container */
+         .container_1 {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Style for individual lines of information */
+        .info-line {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Style for headings */
+        .info-heading {
+            font-size: 40px;
+            font-weight: bold;
+        }
+
+        /* Style for content text */
+        .info-text {
+            font-size: 25px;
+            color: #333;
+        }
+    </style>
+    
+    <script>
+
+// Defining the backend server URL
+const backendurl = "http://localhost:5000";
+
+// Function to execute on window load
+window.onload = function () {
+    // Checking if data is already loaded to avoid redundant fetch
+    if (localStorage.getItem('dataLoaded') === 'true') {
+        // Data is already loaded, do nothing
+        return;
+    }
+     // Fetching data from the backend server
+    fetch(`${backendurl}`, {
+        method: 'GET',
+        mode: "cors",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+        // Showing the modal on successful data load
+        document.getElementById('myModal').style.display = 'block';
+        // Setting a flag in local storage indicating data is loaded
+        localStorage.setItem('dataLoaded', 'true');
+    })
+    .catch(error => {
+        // Logging any errors to the console
+        console.error("Error:", error);
+    });
+};  // Function to close the modal pop-up
+    function closePopup() {
+            document.getElementById('myModal').style.display = 'none';
+};
+        </script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{{url_for('home')}}">Weather Statistics</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('weather')}}">Weather</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('statsPage')}}">Statistics</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div id="myModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close" onclick="closePopup()">&times;</span>
+            <p>Data loading is done!</p>
+        </div>
+    </div>
+<br>
+<br>
+    <div class="container_1">
+        <!-- Line 1 -->
+        <!-- <div class="info-line"> -->
+            <div class="info-heading">Data Loading</div>
+            <div class="info-text">The Data will take nearly 7 minutes to load for the first time. There will be a pop-up regarding the completion of loading. Just click on the pop-up for it to disappear.</div>
+        <!-- </div> -->
+        <br>
+        <!-- Line 2 -->
+        <!-- <div class="info-line"> -->
+            <div class="info-heading">Navigating Through The Pages</div>
+            <div class="info-text">
+                <ol>
+                <li>Click on Weather Statistics to come back to the home page.</li>
+                <li>Click on weather on the Navbar to look at the weather data.</li>
+                <li>Click on Statistics on the Navbar to look at the aggregated weather data.</li>
+                </ol>
+            </div>
+        <!-- </div> -->
+    </div>
+<br>
+</br>
+
+    
+
+<footer class="bg-dark text-white text-center py-3">
+    &copy; 2023 Weather Statistics
+</footer>
+
+<!-- Include Bootstrap JS (jQuery and Popper.js are required dependencies) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

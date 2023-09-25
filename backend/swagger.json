@@ -1,0 +1,195 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Weather API",
+      "description": "API for weather data",
+      "version": "1.0.0"
+    },
+    "paths": {
+      "/": {
+        "get": {
+          "summary": "Home, Loads the Data",
+          "operationId": "getHome",
+          "responses": {
+            "200": {
+              "description": "Successful response",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "message": "Welcome to the Weather API, This Api loads the data"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/weather": {
+        "get": {
+          "summary": "Get weather data",
+          "operationId": "getWeatherData",
+          "parameters": [
+            {
+              "name": "weatherStation",
+              "in": "query",
+              "description": "Weather station name",
+              "required": false,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "dateMMYY",
+              "in": "query",
+              "description": "Date in %m-%d%Y format",
+              "required": false,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "page",
+              "in": "query",
+              "description": "Page number for pagination, add page number",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful response",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "weather_data": [
+                      {
+                        "dateMMYY": "1985-01-01",
+                        "maxTemp": -22,
+                        "minTemp": -128,
+                        "precipitation": 94,
+                        "rowId": "USC001100721985-01-01",
+                        "weatherStation": "USC00110072"
+                    },
+                    {
+                        "dateMMYY": "1985-01-02",
+                        "maxTemp": -122,
+                        "minTemp": -217,
+                        "precipitation": 0,
+                        "rowId": "USC001100721985-01-02",
+                        "weatherStation": "USC00110072"
+                    },
+                    {
+                        "dateMMYY": "1985-01-03",
+                        "maxTemp": -106,
+                        "minTemp": -244,
+                        "precipitation": 0,
+                        "rowId": "USC001100721985-01-03",
+                        "weatherStation": "USC00110072"
+                    },
+                    {
+                        "dateMMYY": "1985-01-04",
+                        "maxTemp": -56,
+                        "minTemp": -189,
+                        "precipitation": 0,
+                        "rowId": "USC001100721985-01-04",
+                        "weatherStation": "USC00110072"
+                    }
+                    ]
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      },
+      "/api/weather/stats": {
+        "get": {
+          "summary": "Get weather statistics",
+          "operationId": "getWeatherStats",
+          "parameters": [
+            {
+              "name": "weatherStation",
+              "in": "query",
+              "description": "Weather station name",
+              "required": false,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "year",
+              "in": "query",
+              "description": "Year for statistics",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            {
+              "name": "page",
+              "in": "query",
+              "description": "Page number for pagination, add page number",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful response",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "data": [
+                      {
+                        "avgMnTemp": 43.264462809917354,                        
+                        "avgMxTemp": 153.7493112947658,
+                        "id": "USC001100721985",
+                        "precipSum": 7743,
+                        "weatherStation": "USC00110072",
+                        "year": 1985
+                      },
+                      {
+                        "avgMnTemp": 63.298630136986304,                        
+                        "avgMxTemp": 177.6027397260274,
+                        "id": "USC001100721987",
+                        "precipSum": 7936,
+                        "weatherStation": "USC00110072",
+                        "year": 1987
+                      },
+                      {
+                        "avgMnTemp": 21.761904761904763,                        
+                        "avgMxTemp": 126.96336996336996,
+                        "id": "USC001100721986",
+                        "precipSum": 5053,
+                        "weatherStation": "USC00110072",
+                        "year": 1986
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      }
+    }
+  }

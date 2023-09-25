@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather Statistics</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <style>
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+            border: 1px solid #000;
+            width: 100%;
+            margin: 0 auto; 
+            text-align: left;
+        }
+        thead {
+            background-color: #333;
+        }
+
+        th {
+            padding: 10px;
+            text-align: left;
+        }
+        tr:nth-child(odd) {
+            background-color: #f2f2f2; /* Alternate row colors */
+        }
+
+        td {
+            padding: 8px;
+        }
+
+        #pagination {
+            margin: 0 3rem 3rem 3rem;
+        }
+        button {
+            padding: 5px 10px;
+            margin-right: 5px;
+            cursor: pointer;
+        }
+    </style>
+
+<script>
+    const backendurl = "http://localhost:5000";
+    var data = []
+    var currentPage = 1;
+    var rowsPerPage = 100;
+    var maxPages = 17300;
+
+    function disableButtons(){
+        console.log(currentPage,maxPages)
+        if(currentPage === 1){
+            console.log(currentPage)
+            document.getElementById("prev").disabled = "true";
+            if(maxPages === currentPage){
+            console.log(currentPage)
+            document.getElementById("next").disabled = "true";
+        }
+        }
+        else if(maxPages === currentPage){
+            console.log(currentPage)
+            document.getElementById("next").disabled = "true";
+        }
+        else{
+            console.log(currentPage)
+            document.getElementById("prev").removeAttribute("disabled")
+            document.getElementById("next").removeAttribute("disabled")
+        }
+    }
+
+    function renderTable(){
+        const pageNum = document.getElementById("page-info")
+        pageNum.innerHTML = currentPage;
+        weatherTableBody.innerHTML = "";
+        maxPages = 17300;
+        console.log(maxPages)
+        data.forEach(item => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+        <td>${item.weatherStation}</td>
+            <td>${item.dateMMYY}</td>
+            <td>${item.maxTemp}</td>
+            <td>${item.minTemp}</td>
+            <td>${item.precipitation}</td>
+        `;
+        weatherTableBody.appendChild(row);
+    });
+    }
+
+    function handlePrevious(){
+        currentPage -=1;
+        const weatherStation = document.getElementById("weatherStation").value;
+        const dateMMYY = document.getElementById("dateMMYY").value;
+
+        console.log({ "weatherStation": weatherStation, "dateMMYY": dateMMYY });
+
+        fetch(`${backendurl}/api/weather?weatherStation=${weatherStation}&dateMMYY=${dateMMYY}&page=${currentPage}`, {method: 'GET'})
+        .then(response => response.json())
+        .then(resultdata => {
+            console.log(resultdata);
+            data = resultdata.weather_data;
+            weatherTableHead.innerHTML = "";
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <th>Station</th>
+                <th>Date</th>
+                <th>Max Temp</th>
+                <th>Min Temp</th>
+                <th>Precipitation</th>
+            `;
+            weatherTableHead.appendChild(row);
+            document.getElementById("pagination").removeAttribute("hidden")
+            renderTable();
+            disableButtons()
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+    }
+
+    function handleNext(){
+        currentPage +=1;
+        const weatherStation = document.getElementById("weatherStation").value;
+        const dateMMYY = document.getElementById("dateMMYY").value;
+
+        console.log({ "weatherStation": weatherStation, "dateMMYY": dateMMYY });
+
+        fetch(`${backendurl}/api/weather?weatherStation=${weatherStation}&dateMMYY=${dateMMYY}&page=${currentPage}`, {method: 'GET'})
+        .then(response => response.json())
+        .then(resultdata => {
+            console.log(resultdata);
+            data = resultdata.weather_data;
+            weatherTableHead.innerHTML = "";
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <th>Station</th>
+                <th>Date</th>
+                <th>Max Temp</th>
+                <th>Min Temp</th>
+                <th>Precipitation</th>
+            `;
+            weatherTableHead.appendChild(row);
+            document.getElementById("pagination").removeAttribute("hidden")
+            renderTable();
+            disableButtons()
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+    }
+
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("weatherForm");
+
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const weatherStation = document.getElementById("weatherStation").value;
+        const dateMMYY = document.getElementById("dateMMYY").value;
+
+        console.log({ "weatherStation": weatherStation, "dateMMYY": dateMMYY });
+
+        fetch(`${backendurl}/api/weather?weatherStation=${weatherStation}&dateMMYY=${dateMMYY}&page=${currentPage}`, {method: 'GET'})
+        .then(response => response.json())
+        .then(resultdata => {
+            console.log(resultdata);
+            data = resultdata.weather_data;
+            weatherTableHead.innerHTML = "";
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <th>Station</th>
+                <th>Date</th>
+                <th>Max Temp</th>
+                <th>Min Temp</th>
+                <th>Precipitation</th>
+            `;
+            weatherTableHead.appendChild(row);
+            document.getElementById("pagination").removeAttribute("hidden")
+            renderTable();
+            disableButtons()
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+    });
+});
+</script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="./home.html">Weather Statistics</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="./weather.html">Weather</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./stats.html">Statistics</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <br>
+    <br>
+
+    <div class="header">
+        <div class="left-form">
+            <form id="weatherForm">
+                <label for="weatherStation">Weather Station:</label>
+                <input type="text" id="weatherStation" name="weatherStation:">
+                <label for="dateMMYY">Date:</label>
+                <input type="date" id="dateMMYY" name="dateMMYY">
+                <button type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="results" style="margin: 2rem;">
+    <table id="weatherTable">
+        <thead id="weatherTableHead">
+        </thead>
+        <tbody id="weatherTableBody">
+        </tbody>
+    </table>
+    <table id="weatherStatsTable" style="margin-top: 2rem;">
+        <thead id="weatherStatsTableHead">
+        </thead>
+        <tbody id="weatherStatsTableBody">
+        </tbody>
+    </table>
+</div>
+
+<div id="pagination" hidden>
+    <button id="prev" onclick="handlePrevious()">Previous</button>
+    <span id="page-info" ></span>
+    <button id="next" onclick="handleNext()">Next</button>
+</div>
+
+<footer class="bg-dark text-white text-center py-3">
+    &copy; 2023 Weather Statistics
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

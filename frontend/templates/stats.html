@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather Statistics</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <style>
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+            border: 1px solid #000;
+            width: 100%;
+            margin: 0 auto; 
+            text-align: left;
+        }
+        thead {
+            background-color: #333;
+        }
+
+        th {
+            padding: 10px;
+            text-align: left;
+        }
+        tr:nth-child(odd) {
+            background-color: #f2f2f2; /* Alternate row colors */
+        }
+
+        td {
+            padding: 8px;
+        }
+
+        #pagination {
+            margin: 0 3rem 3rem 3rem;
+        }
+        button {
+            padding: 5px 10px;
+            margin-right: 5px;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+    
+    const backendurl = "http://localhost:5000";
+    var data = []
+    var currentPage = 1;
+    var rowsPerPage = 100;
+    var maxPages = 17300;
+    // Function to enable/disable pagination buttons based on the current page
+    function disableButtons(){
+        // If it's the first page, disable the "previous" button. If it's also the last page, disable the "next" button
+        if(currentPage === 1){
+            console.log(currentPage)
+            document.getElementById("prev").disabled = "true";
+            if(maxPages === currentPage){
+            console.log(currentPage)
+            document.getElementById("next").disabled = "true";
+        }
+        }
+        // If it's the last page, disable the "next" button
+        else if(maxPages === currentPage){
+            console.log(currentPage)
+            document.getElementById("next").disabled = "true";
+        }
+         // If it's any other page, enable both "previous" and "next" buttons
+        else{
+            console.log(currentPage,maxPages)
+            document.getElementById("prev").removeAttribute("disabled")
+            document.getElementById("next").removeAttribute("disabled")
+        }
+    }
+    // Function to render data into a table, update the page number, and reset the table content for each page
+    function renderTable(){
+        // Get the page number element and update its content with the current page number
+        const pageNum = document.getElementById("page-info")
+        pageNum.innerHTML = currentPage;
+        // Clear the table body content for fresh rendering
+        weatherStatsTableBody.innerHTML = "";
+        maxPages = 17300;
+        // Loop through the data array and create table rows for each item
+        data.forEach(item => {
+        const row = document.createElement("tr");
+        // Fill the row with data from the current item in the loop
+        row.innerHTML = `
+            <td>${item.weatherStation}</td>
+            <td>${item.year}</td>
+            <td>${item.avgMxTemp}</td>
+            <td>${item.avgMnTemp}</td>
+            <td>${item.precipSum}</td>
+        `;
+        // Append the newly created row to the table body
+        weatherStatsTableBody.appendChild(row);
+    });
+    }
+    // Function to handle the action of moving to the previous page in the paginated table
+    function handlePrevious(){
+        // Decrement the current page number by 1
+        currentPage -=1;
+        // Get the user-selected weather station and year values from the respective input fields
+        const weatherStation = document.getElementById("weatherStatsStation").value;
+        const year = document.getElementById("year").value;
+        console.log(weatherStation, year);
+        // Make a GET request to the backend API with the weather station, year, and page number as query parameters
+        fetch(`${backendurl}/api/weather/stats?weatherStation=${weatherStation}&year=${year}&page=${currentPage}`, {
+            method: 'GET',
+        })
+        .then(response => response.json())
+        .then(resultdata => {
+            console.log(resultdata);
+            // Update the global data variable with the new data from the API response
+            data = resultdata.data
+            // Clear the table header for fresh rendering
+            weatherStatsTableHead.innerHTML = "";
+            // Create a new table row element for the header
+            const tableRow = document.createElement("tr");
+            tableRow.innerHTML = `
+                <th>Weather Station</th>
+                <th>Year</th>
+                <th>Average Max Temperature</th>
+                <th>Average Min Temperature</th>
+                <th>Total Precipitation</th>
+            `;
+            // Append the newly created header row to the table head
+            weatherStatsTableHead.appendChild(tableRow);
+            // Make the pagination controls visible by removing the hidden attribute
+            document.getElementById("pagination").removeAttribute("hidden")
+            // Render the table with the new data
+            renderTable();
+            // Check and disable/enable pagination buttons as necessary
+            disableButtons();
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+    }
+    // Function to handle the action of moving to the next page in the paginated table
+    function handleNext(){
+        // Increment the current page number by 1
+        currentPage +=1;
+        // Get the user-selected weather station and year values from the respective input fields
+        const weatherStation = document.getElementById("weatherStatsStation").value;
+                const year = document.getElementById("year").value;
+                console.log(weatherStation, year);
+                // Make a GET request to the backend API with the weather station, year, and page number as query parameters
+                fetch(`${backendurl}/api/weather/stats?weatherStation=${weatherStation}&year=${year}&page=${currentPage}`, {
+                    method: 'GET',
+                })
+                .then(response => response.json())
+                .then(resultdata => {
+                    console.log(resultdata);
+                    // Update the global data variable with the new data from the API response
+                    data = resultdata.data
+                    // Clear the table header for fresh rendering
+                    weatherStatsTableHead.innerHTML = "";
+                    // Create a new table row element for the header
+                    const tableRow = document.createElement("tr");
+                    tableRow.innerHTML = `
+                        <th>Weather Station</th>
+                        <th>Year</th>
+                        <th>Average Max Temperature</th>
+                        <th>Average Min Temperature</th>
+                        <th>Total Precipitation</th>
+                    `;
+                    // Append the newly created header row to the table head
+                    weatherStatsTableHead.appendChild(tableRow);
+                    // Make the pagination controls visible by removing the hidden attribute
+                    document.getElementById("pagination").removeAttribute("hidden")
+                    // Render the table with the new data
+                    renderTable();
+                    // Check and disable/enable pagination buttons as necessary
+                    disableButtons();
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
+    }
+        // This script waits for the DOM content to fully load before executing the code inside it.
+        document.addEventListener("DOMContentLoaded", function () {
+            // Get the form element with id 'weatherStats' and store it in a constant variable.
+            const weatherStatsForm = document.getElementById("weatherStats");
+            // Add an event listener to the form to listen for the 'submit' event.
+            weatherStatsForm.addEventListener("submit", function (event) {
+                // Prevent the default form submission behavior.
+                event.preventDefault();
+                // Get the values of weather station and year from the input fields and log them to the console.
+                const weatherStation = document.getElementById("weatherStatsStation").value;
+                const year = document.getElementById("year").value;
+                console.log(weatherStation, year);
+            // Make a GET request to the backend API to fetch weather statistics.
+            // Include the weather station, year, and page number as query parameters in the URL.
+                fetch(`${backendurl}/api/weather/stats?weatherStation=${weatherStation}&year=${year}&page=${currentPage}`, {
+                    method: 'GET',
+                })
+                .then(response => response.json())// Parse the JSON from the response.
+                .then(resultdata => {
+                    console.log(resultdata);// Log the result data to the console.
+                    data = resultdata.data// Update the global data variable with the new data from the API response.
+                    weatherStatsTableHead.innerHTML = "";// Clear the table header for fresh rendering.
+                    // Create a new table row element for the header.
+                    const tableRow = document.createElement("tr");
+                    tableRow.innerHTML = `
+                        <th>Weather Station</th>
+                        <th>Year</th>
+                        <th>Average Max Temperature</th>
+                        <th>Average Min Temperature</th>
+                        <th>Total Precipitation</th>
+                    `;
+                    // Append the newly created header row to the table head.
+                    weatherStatsTableHead.appendChild(tableRow);
+                    // Make the pagination controls visible by removing the hidden attribute.
+                    document.getElementById("pagination").removeAttribute("hidden")
+                    renderTable();// Render the table with the new data.
+                    disableButtons();// Check and disable/enable pagination buttons as necessary.
+                })
+                .catch(error => {
+                    console.error("Error:", error);// Log any errors to the console.
+                });
+            });
+        });
+        </script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="./home.html">Weather Statistics</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="./weather.html">Weather</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./stats.html">Statistics</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+        <br>
+        <div class="right-form">
+            <form id="weatherStats">
+                <label for="weatherStation">Weather Station:</label>
+                <input type="text" id="weatherStatsStation" name="weatherStation">
+                <label for="year">Year:</label>
+                <input type="text" id="year" name="year">
+                <button type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="results" style="margin: 2rem;">
+    <table id="weatherTable">
+        <thead id="weatherTableHead">
+        </thead>
+        <tbody id="weatherTableBody">
+        </tbody>
+    </table>
+    <table id="weatherStatsTable" style="margin-top: 2rem;">
+        <thead id="weatherStatsTableHead">
+        </thead>
+        <tbody id="weatherStatsTableBody">
+        </tbody>
+    </table>
+</div>
+<div id="pagination" hidden>
+    <button id="prev" onclick="handlePrevious()">Previous</button>
+    <span id="page-info" ></span>
+    <button id="next" onclick="handleNext()">Next</button>
+</div>
+<footer class="bg-dark text-white text-center py-3">
+    &copy; 2023 Weather Statistics
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</body>
+</html>
