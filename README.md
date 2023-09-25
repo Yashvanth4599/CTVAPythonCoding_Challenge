@@ -49,11 +49,11 @@ This project is a weather statistics application that enables users to view and 
 3. Navigate to the project directory in your terminal.
 4. Activate the virtual environmant :
 ```bash
-python -m venv env
+python -m venv venv
 
-.\env\Scripts\activate  # On Windows
+.\venv\Scripts\activate  # On Windows
 
-source env/bin/activate  # On macOS and Linux
+source ./venv/bin/activate  # On macOS and Linux
 ```
 
 5. Install the required packages using the following command:
